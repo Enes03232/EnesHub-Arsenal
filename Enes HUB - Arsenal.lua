@@ -28,9 +28,9 @@ local Infjump = Instance.new("TextButton")
 local InfAmmo = Instance.new("TextButton")
 
 -- Setup
-SunHub.Name = "EnesHub"
-SunHub.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-SunHub.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+EnesHub.Name = "EnesHub"
+EnesHub.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+EnesHub.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 MainPanel.Name = "MainPanel"
 MainPanel.Parent = SunHub
@@ -73,7 +73,7 @@ Logo.BackgroundTransparency = 1
 Logo.Position = UDim2.new(0.03, 0, 0.15, 0)
 Logo.Size = UDim2.new(0.5, 0, 0.7, 0)
 Logo.Font = Enum.Font.GothamBold
-Logo.Text = "ENES HUB"
+Logo.Text = "ENES HUB - Arsenal"
 Logo.TextColor3 = Color3.fromRGB(100, 200, 255)
 Logo.TextSize = 28
 Logo.TextXAlignment = Enum.TextXAlignment.Left
@@ -130,7 +130,7 @@ UniversalTab.BorderSizePixel = 0
 UniversalTab.Position = UDim2.new(0.05, 0, 0.05, 0)
 UniversalTab.Size = UDim2.new(0.4, 0, 0.9, 0)
 UniversalTab.Font = Enum.Font.GothamBold
-UniversalTab.Text = "🌍 UNIVERSAL"
+UniversalTab.Text = "UNIVERSAL"
 UniversalTab.TextColor3 = Color3.fromRGB(100, 200, 255)
 UniversalTab.TextSize = 14
 
@@ -146,7 +146,7 @@ ArsenalTab.BorderSizePixel = 0
 ArsenalTab.Position = UDim2.new(0.5, 0, 0.05, 0)
 ArsenalTab.Size = UDim2.new(0.4, 0, 0.9, 0)
 ArsenalTab.Font = Enum.Font.GothamBold
-ArsenalTab.Text = "🔫 ARSENAL"
+ArsenalTab.Text = "ARSENAL"
 ArsenalTab.TextColor3 = Color3.fromRGB(150, 150, 150)
 ArsenalTab.TextSize = 14
 
@@ -620,3 +620,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         MainPanel.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
+

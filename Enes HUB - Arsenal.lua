@@ -28,9 +28,9 @@ local Infjump = Instance.new("TextButton")
 local InfAmmo = Instance.new("TextButton")
 
 -- Setup
-EnesHub.Name = "EnesHub"
-EnesHub.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-EnesHub.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+SunHub.Name = "EnesHub"
+SunHub.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+SunHub.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 MainPanel.Name = "MainPanel"
 MainPanel.Parent = SunHub
@@ -73,7 +73,7 @@ Logo.BackgroundTransparency = 1
 Logo.Position = UDim2.new(0.03, 0, 0.15, 0)
 Logo.Size = UDim2.new(0.5, 0, 0.7, 0)
 Logo.Font = Enum.Font.GothamBold
-Logo.Text = "ENES HUB - Arsenal"
+Logo.Text = "ENES HUB - ARSENAL"
 Logo.TextColor3 = Color3.fromRGB(100, 200, 255)
 Logo.TextSize = 28
 Logo.TextXAlignment = Enum.TextXAlignment.Left
@@ -199,7 +199,7 @@ EspCorner.CornerRadius = UDim.new(0, 8)
 EspCorner.Parent = Esp
 
 Esp.MouseButton1Down:connect(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP"))()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
 end)
 
 Aimbot.Name = "Aimbot"
@@ -620,6 +620,3 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         MainPanel.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
-
-
-

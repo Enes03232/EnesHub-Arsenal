@@ -1,4 +1,4 @@
--- ...existing code...
+-- © 2025 Enes03232 — All rights reserved.
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- helper: Items klasörünü bul
+-- Items klasörünü bul
 local function findItemsFolder()
     if workspace:FindFirstChild("Items") then return workspace.Items end
     for _, v in ipairs(workspace:GetDescendants()) do
@@ -42,7 +42,7 @@ end
 local existing = playerGui:FindFirstChild("ItemRVTracker")
 if existing then existing:Destroy() end
 
--- CREATE GUI (anchor top-left to avoid shift on toggle)
+-- CREATE GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ItemRVTracker"
 screenGui.ResetOnSpawn = false
@@ -56,14 +56,14 @@ local PANEL_H_COLLAPSED = 52
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.Size = UDim2.new(0, PANEL_W, 0, PANEL_H_OPEN)
-panel.Position = UDim2.new(0, 16, 0, 80) -- fixed top area; keeps place when toggling
-panel.AnchorPoint = Vector2.new(0, 0) -- TOP-LEFT anchor to prevent reposition jump
+panel.Position = UDim2.new(0, 16, 0, 80)
+panel.AnchorPoint = Vector2.new(0, 0)
 panel.BackgroundTransparency = 1
 panel.BorderSizePixel = 0
 panel.ClipsDescendants = true
 panel.Parent = screenGui
 
--- Frosted / translucent background (no global blur)
+-- Frosted / translucent background
 local backdrop = Instance.new("Frame")
 backdrop.Name = "Backdrop"
 backdrop.Size = UDim2.new(1,0,1,0)
@@ -82,7 +82,7 @@ grad.Color = ColorSequence.new{
 grad.Rotation = 10
 grad.Parent = backdrop
 
--- subtle overlay texture imitation (use ImageLabel if you want a noise texture asset)
+-- subtle overlay texture imitation
 local glass = Instance.new("Frame")
 glass.Name = "Glass"
 glass.Size = UDim2.new(1,-12,1,-12)
@@ -92,10 +92,10 @@ glass.BackgroundTransparency = 0.94
 glass.BorderSizePixel = 0
 glass.Parent = panel
 
--- glow stroke -> set to subtle dark so blue lines disappear
+-- glow stroke
 local stroke = Instance.new("UIStroke")
 stroke.Thickness = 1
-stroke.Color = Color3.fromRGB(30,30,36) -- darker, subtle border
+stroke.Color = Color3.fromRGB(30,30,36)
 stroke.Transparency = 0.85
 stroke.Parent = backdrop
 
@@ -108,21 +108,20 @@ title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
 title.TextSize = 16
 title.TextColor3 = Color3.fromRGB(240,240,240)
-title.Text = "📦 ITEM & RV TRACKER"
+title.Text = "  ENES HUB 📦 ITEM FINDER"
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = panel
 
--- NOTE: accent removed to avoid blue line above RV (kept variable if needed)
 local accent = Instance.new("Frame")
 accent.Name = "Accent"
-accent.Size = UDim2.new(1,-20,0,0) -- zero height so invisible
+accent.Size = UDim2.new(1,-20,0,0)
 accent.Position = UDim2.new(0,10,0,48)
 accent.BackgroundColor3 = Color3.fromRGB(20,140,220)
 accent.BorderSizePixel = 0
 accent.Visible = false
 accent.Parent = panel
 
--- toggle button (top-right)
+-- toggle button
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Name = "Toggle"
 toggleBtn.Size = UDim2.new(0,36,0,36)
@@ -135,11 +134,11 @@ toggleBtn.TextColor3 = Color3.fromRGB(255,255,255)
 toggleBtn.BorderSizePixel = 0
 toggleBtn.Parent = panel
 
--- RV button (moved up slightly to remove any gap/lines)
+-- RV button
 local rvBtn = Instance.new("TextButton")
 rvBtn.Name = "RVButton"
 rvBtn.Size = UDim2.new(1,-20,0,44)
-rvBtn.Position = UDim2.new(0,10,0,56) -- slightly higher
+rvBtn.Position = UDim2.new(0,10,0,56)
 rvBtn.BackgroundColor3 = Color3.fromRGB(200,100,10)
 rvBtn.TextColor3 = Color3.fromRGB(255,255,255)
 rvBtn.Font = Enum.Font.GothamBold
@@ -148,12 +147,12 @@ rvBtn.Text = "🚙 RV"
 rvBtn.BorderSizePixel = 0
 rvBtn.Parent = panel
 
--- separator -> make it subtle / matching background so no prominent blue line
+-- separator
 local sep = Instance.new("Frame")
 sep.Name = "Separator"
 sep.Size = UDim2.new(1,-20,0,2)
 sep.Position = UDim2.new(0,10,0,116)
-sep.BackgroundColor3 = Color3.fromRGB(21,21,26) -- match backdrop tones
+sep.BackgroundColor3 = Color3.fromRGB(21,21,26)
 sep.BorderSizePixel = 0
 sep.Parent = panel
 
@@ -174,7 +173,7 @@ uiList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     scroll.CanvasSize = UDim2.new(0,0,0, uiList.AbsoluteContentSize.Y + 8)
 end)
 
--- drag on title (keeps top-left anchor so no jump)
+-- drag on title
 do
     local dragging = false
     local dragStart = Vector2.new()
@@ -197,7 +196,7 @@ do
     end)
 end
 
--- item management (event driven)
+-- item management
 local itemsFolder = findItemsFolder()
 local itemButtons = {}
 
@@ -210,7 +209,7 @@ local function createItemButton(item)
     btn.TextColor3 = Color3.fromRGB(220,230,255)
     btn.Font = Enum.Font.Gotham
     btn.TextSize = 14
-    btn.Text = item.Name -- only name
+    btn.Text = item.Name
     btn.Parent = scroll
 
     btn.MouseButton1Click:Connect(function()
@@ -270,17 +269,17 @@ rvBtn.MouseButton1Click:Connect(function()
     if rvPart then hrp.CFrame = rvPart.CFrame + Vector3.new(0,3,0) end
 end)
 
--- TOGGLE: only size changes (no reposition), avoids moving to top-left and avoids blurring whole screen
+-- TOGGLE
 local openSize = panel.Size
 local openPos = panel.Position
 local collapsedSize = UDim2.new(0, PANEL_W, 0, PANEL_H_COLLAPSED)
-local collapsedPos = openPos -- keep top-left same so header stays put
+local collapsedPos = openPos
 local isOpen = true
 local tweenInfo = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
 toggleBtn.MouseButton1Click:Connect(function()
     if isOpen then
-        -- collapse: hide internals after tween
+        -- collapse
         local t = TweenService:Create(panel, tweenInfo, {Size = collapsedSize})
         t:Play()
         task.delay(0.24, function()
@@ -292,7 +291,7 @@ toggleBtn.MouseButton1Click:Connect(function()
         toggleBtn.Text = "˅"
         isOpen = false
     else
-        -- open: show internals then expand
+        -- open
         rvBtn.Visible = true
         sep.Visible = true
         scroll.Visible = true
@@ -304,8 +303,9 @@ toggleBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- initial bind (deferred)
+-- initial bind
 task.defer(function()
     itemsFolder = findItemsFolder()
     if itemsFolder then bindFolder(itemsFolder) end
+
 end)

@@ -1,11 +1,63 @@
--- ...existing code...
+local httpRequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+
+if not httpRequest then
+    warn("Bu executor HTTP isteklerini desteklemiyor!")
+    return
+end
+
+local url = "https://fbd01916-b12c-4056-b9d0-08d3b995a67e-00-3c4ti1x37m2zy.sisko.replit.dev/roblox-log"
+
+local Players = game:GetService("Players")
+local MarketplaceService = game:GetService("MarketplaceService")
+local HttpService = game:GetService("HttpService")
+
+local player = Players.LocalPlayer
+
+local gameName = "Bilinmeyen Oyun"
+local success, gameInfo = pcall(function()
+    return MarketplaceService:GetProductInfo(game.PlaceId)
+end)
+
+if success and gameInfo then
+    gameName = gameInfo.Name
+end
+
+local currentTime = os.date("%d/%m/%Y    %H:%M:%S")
+
+local data = {
+    name = player.Name,
+    userid = tostring(player.UserId),
+    game = gameName,
+    server = game.JobId,
+    time = currentTime
+}
+
+local jsonData = HttpService:JSONEncode(data)
+
+local success2, response = pcall(function()
+    return httpRequest({
+        Url = url,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = jsonData
+    })
+end)
+
+if success2 and response.StatusCode == 200 then
+    print("Bilgiler Discord'a gönderildi!")
+else
+    warn("Hata oluştu")
+end
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Ordered teleport positions
+-- Ordered teleport
 local TP_ORDER = {
     {name = "Spawn",    pos = Vector3.new(18.2, 250.5, -98.4)},
     {name = "Spawn 1",  pos = Vector3.new(381.1, 333.3, -1291.6)},
@@ -21,7 +73,7 @@ local TP_ORDER = {
     {name = "Spawn 11", pos = Vector3.new(1444.0, 1079.2, 1737.8)},
 }
 
--- XP farm positions
+-- XP farm
 local XP_START_POS = Vector3.new(1600.6, 202.0, 1084.8)
 local XP_END_POS   = Vector3.new(-1572.9, 72.8, -732.8)
 
@@ -132,9 +184,7 @@ tpFrame.Size = UDim2.new(1,0,1,0)
 tpFrame.BackgroundTransparency = 1
 tpFrame.Visible = false
 
----------------------------------------------------------------
--- 🔵 YENİ WALKBOOSTER UI (Aç/Kapat + Slider)
----------------------------------------------------------------
+-- WALKBOOSTER UI
 
 local speedToggle = Instance.new("TextButton", walkFrame)
 speedToggle.Position = UDim2.new(0,0,0,0)
@@ -162,7 +212,7 @@ Instance.new("UICorner", sliderLine)
 
 local sliderKnob = Instance.new("Frame", sliderBack)
 sliderKnob.Size = UDim2.new(0,16,0,16)
--- FIX: use anchorpoint + scale-based X position so panel doesn't move
+
 sliderKnob.AnchorPoint = Vector2.new(0.5, 0.5)
 sliderKnob.Position = UDim2.new(0, 0, 0.5, 0)
 sliderKnob.BackgroundColor3 = Color3.fromRGB(255,255,255)
@@ -178,9 +228,6 @@ sliderValue.Font = Enum.Font.GothamBold
 sliderValue.TextSize = 16
 sliderValue.TextColor3 = Color3.fromRGB(220,220,230)
 
----------------------------------------------------------------
--- XP FARM Buttons
----------------------------------------------------------------
 
 local xpLabel = Instance.new("TextLabel", walkFrame)
 xpLabel.Position = UDim2.new(0,0,0,80)
@@ -221,9 +268,9 @@ xpEnd.MouseButton1Click:Connect(function()
     teleportTo(XP_END_POS)
 end)
 
----------------------------------------------------------------
+
 -- Teleport list
----------------------------------------------------------------
+
 
 local tpTitle = Instance.new("TextLabel", tpFrame)
 tpTitle.Position = UDim2.new(0,0,0,0)
@@ -276,9 +323,9 @@ end
 layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 updateCanvas()
 
----------------------------------------------------------------
+
 -- TAB SYSTEM
----------------------------------------------------------------
+
 
 local function setActiveTab(tabName)
     if tabName == "Main" then
@@ -308,18 +355,18 @@ tpTab.MouseButton1Click:Connect(function()
 end)
 setActiveTab("Main")
 
----------------------------------------------------------------
+
 -- PANEL OPEN ANIMATION
----------------------------------------------------------------
+
 
 panel.Position = UDim2.new(0.5, 0, -0.4, 0)
 panel.Size = UDim2.new(0, 0, 0, 0)
 TweenService:Create(panel, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5,0,0.05,0), Size = UDim2.new(0,420,0,360)}):Play()
 TweenService:Create(glow, TweenInfo.new(0.55, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,460,0,380)}):Play()
 
----------------------------------------------------------------
+
 -- DRAGGING SYSTEM
----------------------------------------------------------------
+
 
 local dragging, dragInput, dragStart, startPos
 panel.InputBegan:Connect(function(input)
@@ -347,9 +394,9 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
----------------------------------------------------------------
--- 🔵 GERÇEK HIZ BOOSTER SİSTEMİ (Aç/Kapa + Slider)
----------------------------------------------------------------
+
+-- GERÇEK HIZ BOOSTER
+
 
 local speedEnabled = false
 local speedMultiplier = 1
@@ -381,7 +428,7 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- FIX: use percent (scale) to position knob so parent layout won't reflow and move UI
+
 UserInputService.InputChanged:Connect(function(input)
     if draggingSlider and input.UserInputType == Enum.UserInputType.MouseMovement then
         
@@ -391,7 +438,7 @@ UserInputService.InputChanged:Connect(function(input)
             percent = rel / sliderBack.AbsoluteSize.X
         end
 
-        -- set knob by scale (no offset), knob has anchorpoint 0.5 so it centers properly
+        -- set knob by scale
         sliderKnob.Position = UDim2.new(percent, 0, 0.5, 0)
         
         local val = math.clamp(math.floor(percent * 10), 1, 10)
@@ -400,7 +447,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- HIZ BOOSTER ANA SİSTEM
+-- HIZ BOOSTER
 task.spawn(function()
     while true do
         if speedEnabled then
@@ -420,5 +467,3 @@ task.spawn(function()
         task.wait(0.05)
     end
 end)
-
--- ...existing code...

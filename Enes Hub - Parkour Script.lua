@@ -172,7 +172,7 @@ tpFrame.Visible = false
 local speedToggle = Instance.new("TextButton", walkFrame)
 speedToggle.Position = UDim2.new(0,0,0,0)
 speedToggle.Size = UDim2.new(0,120,0,32)
-speedToggle.Text = "HIZ: Kapalı"
+speedToggle.Text = "SPEED: Close"
 speedToggle.Font = Enum.Font.GothamBold
 speedToggle.TextSize = 16
 speedToggle.BackgroundColor3 = Color3.fromRGB(80, 30, 200)
@@ -441,7 +441,7 @@ local speedMultiplier = 1
 speedToggle.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
     if speedEnabled then
-        speedToggle.Text = "HIZ: Açık ("..tostring(speedMultiplier).."x)"
+        speedToggle.Text = "SPEED: Open ("..tostring(speedMultiplier).."x)"
         speedToggle.BackgroundColor3 = Color3.fromRGB(0,150,255)
     else
         speedToggle.Text = "HIZ: Kapalı"
@@ -488,4 +488,3 @@ task.spawn(function()
         task.wait(0.05)
     end
 end)
-

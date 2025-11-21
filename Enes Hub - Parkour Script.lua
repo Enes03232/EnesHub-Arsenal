@@ -1,3 +1,4 @@
+-- filepath: c:\scripts\enes_hub.lua
 local httpRequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 
 if not httpRequest then
@@ -10,20 +11,21 @@ local url = "https://fbd01916-b12c-4056-b9d0-08d3b995a67e-00-3c4ti1x37m2zy.sisko
 local Players = game:GetService("Players")
 local MarketplaceService = game:GetService("MarketplaceService")
 local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
+if not player then return end
 
 local gameName = "Bilinmeyen Oyun"
 local success, gameInfo = pcall(function()
     return MarketplaceService:GetProductInfo(game.PlaceId)
 end)
-
 if success and gameInfo then
     gameName = gameInfo.Name
 end
 
 local currentTime = os.date("%d/%m/%Y    %H:%M:%S")
-
 local data = {
     name = player.Name,
     userid = tostring(player.UserId),
@@ -31,30 +33,17 @@ local data = {
     server = game.JobId,
     time = currentTime
 }
-
 local jsonData = HttpService:JSONEncode(data)
 
-local success2, response = pcall(function()
-    return httpRequest({
+pcall(function()
+    httpRequest({
         Url = url,
         Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
+        Headers = { ["Content-Type"] = "application/json" },
         Body = jsonData
     })
 end)
 
-if success2 and response.StatusCode == 200 then
-    print("Enes Hub!")
-else
-    warn("Hata oluştu")
-end
-
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- Ordered teleport
@@ -72,10 +61,6 @@ local TP_ORDER = {
     {name = "Spawn 10", pos = Vector3.new(116.3, 1033.3, 1961.0)},
     {name = "Spawn 11", pos = Vector3.new(1444.0, 1079.2, 1737.8)},
 }
-
--- XP farm
-local XP_START_POS = Vector3.new(1600.6, 202.0, 1084.8)
-local XP_END_POS   = Vector3.new(-1572.9, 72.8, -732.8)
 
 local function pulseButton(btn)
     local orig = btn.Size
@@ -100,12 +85,12 @@ screenGui.Name = "EnesHub"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Glow background
+-- Glow background (orijinal boyutlara yakın)
 local glow = Instance.new("Frame", screenGui)
 glow.Name = "Glow"
 glow.AnchorPoint = Vector2.new(0.5, 0)
 glow.Position = UDim2.new(0.5, 0, 0.05, 0)
-glow.Size = UDim2.new(0, 440, 0, 360)
+glow.Size = UDim2.new(0, 460, 0, 380)
 glow.BackgroundTransparency = 1
 local glowGradient = Instance.new("UIGradient", glow)
 glowGradient.Color = ColorSequence.new{
@@ -115,7 +100,7 @@ glowGradient.Color = ColorSequence.new{
 }
 glowGradient.Rotation = 0
 
--- Main panel
+-- Main panel (ESKİ boyut: 420x360)
 local panel = Instance.new("Frame", screenGui)
 panel.Name = "Main"
 panel.AnchorPoint = Vector2.new(0.5, 0)
@@ -185,7 +170,6 @@ tpFrame.BackgroundTransparency = 1
 tpFrame.Visible = false
 
 -- WALKBOOSTER UI
-
 local speedToggle = Instance.new("TextButton", walkFrame)
 speedToggle.Position = UDim2.new(0,0,0,0)
 speedToggle.Size = UDim2.new(0,120,0,32)
@@ -196,8 +180,7 @@ speedToggle.BackgroundColor3 = Color3.fromRGB(80, 30, 200)
 speedToggle.TextColor3 = Color3.fromRGB(255,255,255)
 Instance.new("UICorner", speedToggle)
 
--- Removed slider UI. Added +/- buttons and a display label.
-
+-- +/- buttons and display
 local speedDec = Instance.new("TextButton", walkFrame)
 speedDec.Position = UDim2.new(0,0,0,42)
 speedDec.Size = UDim2.new(0,48,0,32)
@@ -227,6 +210,7 @@ speedDisplay.Font = Enum.Font.GothamBold
 speedDisplay.TextSize = 16
 speedDisplay.TextColor3 = Color3.fromRGB(220,220,230)
 
+-- XP Farm label
 local xpLabel = Instance.new("TextLabel", walkFrame)
 xpLabel.Position = UDim2.new(0,0,0,80)
 xpLabel.Size = UDim2.new(0, 240, 0, 20)
@@ -237,39 +221,107 @@ xpLabel.TextSize = 16
 xpLabel.TextColor3 = Color3.fromRGB(220,220,230)
 xpLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-local xpStart = Instance.new("TextButton", walkFrame)
-xpStart.Position = UDim2.new(0,0,0,106)
-xpStart.Size = UDim2.new(0,120,0,32)
-xpStart.Text = "Start"
-xpStart.Font = Enum.Font.GothamBold
-xpStart.TextSize = 16
-xpStart.BackgroundColor3 = Color3.fromRGB(100,180,255)
-xpStart.TextColor3 = Color3.fromRGB(255,255,255)
-Instance.new("UICorner", xpStart)
+-- xpContainer: ScrollingFrame, panelin içinde kalarak taşmayı engeller
+local xpContainer = Instance.new("ScrollingFrame", walkFrame)
+xpContainer.Name = "XPContainer"
+xpContainer.Position = UDim2.new(0,0,0,106)
+xpContainer.Size = UDim2.new(1, 0, 0, 200)
+xpContainer.BackgroundTransparency = 1
+xpContainer.ScrollBarThickness = 8
+xpContainer.CanvasSize = UDim2.new(0,0,0,0)
 
-local xpEnd = Instance.new("TextButton", walkFrame)
-xpEnd.Position = UDim2.new(0,132,0,106)
-xpEnd.Size = UDim2.new(0,120,0,32)
-xpEnd.Text = "End"
-xpEnd.Font = Enum.Font.GothamBold
-xpEnd.TextSize = 16
-xpEnd.BackgroundColor3 = Color3.fromRGB(120,200,120)
-xpEnd.TextColor3 = Color3.fromRGB(255,255,255)
-Instance.new("UICorner", xpEnd)
+local xpLayout = Instance.new("UIListLayout", xpContainer)
+xpLayout.FillDirection = Enum.FillDirection.Vertical
+xpLayout.SortOrder = Enum.SortOrder.LayoutOrder
+xpLayout.Padding = UDim.new(0,8)
 
-xpStart.MouseButton1Click:Connect(function()
-    pulseButton(xpStart)
-    teleportTo(XP_START_POS)
+local xpPadding = Instance.new("UIPadding", xpContainer)
+xpPadding.PaddingLeft = UDim.new(0,4)
+xpPadding.PaddingRight = UDim.new(0,4)
+xpPadding.PaddingTop = UDim.new(0,4)
+xpPadding.PaddingBottom = UDim.new(0,4)
+
+-- Level list (tanımlar)
+local XP_LOCATIONS = {
+    {level = 200,
+     start = Vector3.new(-921.3, 60.0, -1312.1),
+     finish = Vector3.new(-895.6, 136.2, 2000.0)
+    },
+    {level = 40,
+     start = Vector3.new(2987.5, 270.2, 2052.6),
+     finish = Vector3.new(-1589.5, 634.6, 1913.0)
+    },
+    {level = 25,
+     start = Vector3.new(123.5, 235.6, -644.0),
+     finish = Vector3.new(165.3, 461.8, -475.0)
+    },
+    {level = 15,
+     start = Vector3.new(-263.6, 423.9, -366.4),
+     finish = Vector3.new(58.4, 165.0, -544.6)
+    },
+    {level = 6,
+     start = Vector3.new(2503.4, 29.8, 1482.9),
+     finish = Vector3.new(2718.5, 100.0, 1826.4)
+    },
+}
+
+-- azdan çoğa sıralama (6 en üstte)
+table.sort(XP_LOCATIONS, function(a,b) return a.level < b.level end)
+
+for _, info in ipairs(XP_LOCATIONS) do
+    local row = Instance.new("Frame", xpContainer)
+    row.Size = UDim2.new(1, 0, 0, 40)
+    row.BackgroundTransparency = 1
+
+    local lvlLabel = Instance.new("TextLabel", row)
+    lvlLabel.Size = UDim2.new(0.45, 0, 1, 0)
+    lvlLabel.Position = UDim2.new(0, 0, 0, 0)
+    lvlLabel.BackgroundTransparency = 1
+    lvlLabel.Text = "Level " .. tostring(info.level)
+    lvlLabel.Font = Enum.Font.GothamBold
+    lvlLabel.TextSize = 14
+    lvlLabel.TextColor3 = Color3.fromRGB(220,220,230)
+    lvlLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local startBtn = Instance.new("TextButton", row)
+    startBtn.Size = UDim2.new(0.22, 0, 0, 30)
+    startBtn.Position = UDim2.new(0.52, 0, 0.5, -15)
+    startBtn.Text = "Start"
+    startBtn.Font = Enum.Font.Gotham
+    startBtn.TextSize = 14
+    startBtn.BackgroundColor3 = Color3.fromRGB(100,180,255)
+    startBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    startBtn.BorderSizePixel = 0
+    Instance.new("UICorner", startBtn)
+
+    local endBtn = Instance.new("TextButton", row)
+    endBtn.Size = UDim2.new(0.22, 0, 0, 30)
+    endBtn.Position = UDim2.new(0.78, 0, 0.5, -15)
+    endBtn.Text = "End"
+    endBtn.Font = Enum.Font.Gotham
+    endBtn.TextSize = 14
+    endBtn.BackgroundColor3 = Color3.fromRGB(120,200,120)
+    endBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    endBtn.BorderSizePixel = 0
+    Instance.new("UICorner", endBtn)
+
+    startBtn.MouseButton1Click:Connect(function()
+        pulseButton(startBtn)
+        teleportTo(info.start)
+    end)
+    endBtn.MouseButton1Click:Connect(function()
+        pulseButton(endBtn)
+        teleportTo(info.finish)
+    end)
+end
+
+-- xpContainer canvas otomatik güncelleme
+xpLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    xpContainer.CanvasSize = UDim2.new(0, 0, 0, xpLayout.AbsoluteContentSize.Y + 8)
 end)
-xpEnd.MouseButton1Click:Connect(function()
-    pulseButton(xpEnd)
-    teleportTo(XP_END_POS)
-end)
-
+xpContainer.CanvasSize = UDim2.new(0, 0, 0, xpLayout.AbsoluteContentSize.Y + 8)
 
 -- Teleport list
-
-
 local tpTitle = Instance.new("TextLabel", tpFrame)
 tpTitle.Position = UDim2.new(0,0,0,0)
 tpTitle.Size = UDim2.new(1,0,0,20)
@@ -321,10 +373,7 @@ end
 layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 updateCanvas()
 
-
 -- TAB SYSTEM
-
-
 local function setActiveTab(tabName)
     if tabName == "Main" then
         mainTab.BackgroundColor3 = Color3.fromRGB(60,60,80)
@@ -353,19 +402,13 @@ tpTab.MouseButton1Click:Connect(function()
 end)
 setActiveTab("Main")
 
-
 -- PANEL OPEN ANIMATION
-
-
 panel.Position = UDim2.new(0.5, 0, -0.4, 0)
 panel.Size = UDim2.new(0, 0, 0, 0)
 TweenService:Create(panel, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5,0,0.05,0), Size = UDim2.new(0,420,0,360)}):Play()
 TweenService:Create(glow, TweenInfo.new(0.55, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,460,0,380)}):Play()
 
-
 -- DRAGGING SYSTEM
-
-
 local dragging, dragInput, dragStart, startPos
 panel.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -392,26 +435,21 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-
 -- SPEED BOOSTER
-
-
 local speedEnabled = false
 local speedMultiplier = 1
 
 speedToggle.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
-    
     if speedEnabled then
-        speedToggle.Text = "SPEED: Open ("..tostring(speedMultiplier).."x)"
+        speedToggle.Text = "HIZ: Açık ("..tostring(speedMultiplier).."x)"
         speedToggle.BackgroundColor3 = Color3.fromRGB(0,150,255)
     else
-        speedToggle.Text = "SPEED: Close"
+        speedToggle.Text = "HIZ: Kapalı"
         speedToggle.BackgroundColor3 = Color3.fromRGB(80,30,200)
     end
 end)
 
--- Butonlarla hız arttırma / azaltma
 speedDec.MouseButton1Click:Connect(function()
     pulseButton(speedDec)
     speedMultiplier = math.clamp((speedMultiplier or 1) - 1, 1, 10)
@@ -430,11 +468,10 @@ speedInc.MouseButton1Click:Connect(function()
     end
 end)
 
--- başlangıç değerleri
 speedMultiplier = math.clamp(speedMultiplier or 1, 1, 10)
 speedDisplay.Text = tostring(speedMultiplier) .. "x"
 
--- HIZ BOOSTER
+-- HIZ BOOSTER loop
 task.spawn(function()
     while true do
         if speedEnabled then
@@ -442,7 +479,6 @@ task.spawn(function()
             if char then
                 local hrp = char:FindFirstChild("HumanoidRootPart")
                 local hum = char:FindFirstChild("Humanoid")
-
                 if hrp and hum then
                     if hum.MoveDirection.Magnitude > 0 then
                         hrp.Velocity = hum.MoveDirection * (hum.WalkSpeed * speedMultiplier)
@@ -450,8 +486,6 @@ task.spawn(function()
                 end
             end
         end
-
         task.wait(0.05)
     end
 end)
-

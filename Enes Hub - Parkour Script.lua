@@ -46,7 +46,7 @@ local success2, response = pcall(function()
 end)
 
 if success2 and response.StatusCode == 200 then
-    print("Bilgiler Discord'a gönderildi!")
+    print("Enes Hub!")
 else
     warn("Hata oluştu")
 end
@@ -454,3 +454,4 @@ task.spawn(function()
         task.wait(0.05)
     end
 end)
+

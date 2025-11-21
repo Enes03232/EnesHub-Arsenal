@@ -196,38 +196,36 @@ speedToggle.BackgroundColor3 = Color3.fromRGB(80, 30, 200)
 speedToggle.TextColor3 = Color3.fromRGB(255,255,255)
 Instance.new("UICorner", speedToggle)
 
-local sliderBack = Instance.new("Frame", walkFrame)
-sliderBack.Position = UDim2.new(0,0,0,42)
-sliderBack.Size = UDim2.new(0,240,0,8)
-sliderBack.BackgroundColor3 = Color3.fromRGB(40,40,55)
-sliderBack.BorderSizePixel = 0
-Instance.new("UICorner", sliderBack)
+-- Removed slider UI. Added +/- buttons and a display label.
 
-local sliderLine = Instance.new("Frame", sliderBack)
-sliderLine.Size = UDim2.new(1,0,0,3)
-sliderLine.Position = UDim2.new(0,0,0.5,-1)
-sliderLine.BackgroundColor3 = Color3.fromRGB(0,150,255)
-sliderLine.BorderSizePixel = 0
-Instance.new("UICorner", sliderLine)
+local speedDec = Instance.new("TextButton", walkFrame)
+speedDec.Position = UDim2.new(0,0,0,42)
+speedDec.Size = UDim2.new(0,48,0,32)
+speedDec.Text = "-"
+speedDec.Font = Enum.Font.GothamBold
+speedDec.TextSize = 20
+speedDec.BackgroundColor3 = Color3.fromRGB(60,60,80)
+speedDec.TextColor3 = Color3.fromRGB(255,255,255)
+Instance.new("UICorner", speedDec)
 
-local sliderKnob = Instance.new("Frame", sliderBack)
-sliderKnob.Size = UDim2.new(0,16,0,16)
+local speedInc = Instance.new("TextButton", walkFrame)
+speedInc.Position = UDim2.new(0,56,0,42)
+speedInc.Size = UDim2.new(0,48,0,32)
+speedInc.Text = "+"
+speedInc.Font = Enum.Font.GothamBold
+speedInc.TextSize = 20
+speedInc.BackgroundColor3 = Color3.fromRGB(60,60,80)
+speedInc.TextColor3 = Color3.fromRGB(255,255,255)
+Instance.new("UICorner", speedInc)
 
-sliderKnob.AnchorPoint = Vector2.new(0.5, 0.5)
-sliderKnob.Position = UDim2.new(0, 0, 0.5, 0)
-sliderKnob.BackgroundColor3 = Color3.fromRGB(255,255,255)
-sliderKnob.BorderSizePixel = 0
-Instance.new("UICorner", sliderKnob)
-
-local sliderValue = Instance.new("TextLabel", walkFrame)
-sliderValue.Position = UDim2.new(0,250,0,35)
-sliderValue.Size = UDim2.new(0,50,0,20)
-sliderValue.BackgroundTransparency = 1
-sliderValue.Text = "1x"
-sliderValue.Font = Enum.Font.GothamBold
-sliderValue.TextSize = 16
-sliderValue.TextColor3 = Color3.fromRGB(220,220,230)
-
+local speedDisplay = Instance.new("TextLabel", walkFrame)
+speedDisplay.Position = UDim2.new(0,112,0,44)
+speedDisplay.Size = UDim2.new(0,50,0,24)
+speedDisplay.BackgroundTransparency = 1
+speedDisplay.Text = "1x"
+speedDisplay.Font = Enum.Font.GothamBold
+speedDisplay.TextSize = 16
+speedDisplay.TextColor3 = Color3.fromRGB(220,220,230)
 
 local xpLabel = Instance.new("TextLabel", walkFrame)
 xpLabel.Position = UDim2.new(0,0,0,80)
@@ -276,7 +274,7 @@ local tpTitle = Instance.new("TextLabel", tpFrame)
 tpTitle.Position = UDim2.new(0,0,0,0)
 tpTitle.Size = UDim2.new(1,0,0,20)
 tpTitle.BackgroundTransparency = 1
-tpTitle.Text = "Teleport Yerleri"
+tpTitle.Text = "Teleport Locations"
 tpTitle.Font = Enum.Font.GothamBold
 tpTitle.TextSize = 16
 tpTitle.TextColor3 = Color3.fromRGB(220,220,230)
@@ -395,7 +393,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 
--- GERÇEK HIZ BOOSTER
+-- SPEED BOOSTER
 
 
 local speedEnabled = false
@@ -405,47 +403,36 @@ speedToggle.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
     
     if speedEnabled then
-        speedToggle.Text = "HIZ: Açık"
+        speedToggle.Text = "SPEED: Open ("..tostring(speedMultiplier).."x)"
         speedToggle.BackgroundColor3 = Color3.fromRGB(0,150,255)
     else
-        speedToggle.Text = "HIZ: Kapalı"
+        speedToggle.Text = "SPEED: Close"
         speedToggle.BackgroundColor3 = Color3.fromRGB(80,30,200)
     end
 end)
 
--- SLIDER
-local draggingSlider = false
-
-sliderKnob.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingSlider = true
+-- Butonlarla hız arttırma / azaltma
+speedDec.MouseButton1Click:Connect(function()
+    pulseButton(speedDec)
+    speedMultiplier = math.clamp((speedMultiplier or 1) - 1, 1, 10)
+    speedDisplay.Text = tostring(speedMultiplier) .. "x"
+    if speedEnabled then
+        speedToggle.Text = "HIZ: Açık ("..tostring(speedMultiplier).."x)"
     end
 end)
 
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingSlider = false
+speedInc.MouseButton1Click:Connect(function()
+    pulseButton(speedInc)
+    speedMultiplier = math.clamp((speedMultiplier or 1) + 1, 1, 10)
+    speedDisplay.Text = tostring(speedMultiplier) .. "x"
+    if speedEnabled then
+        speedToggle.Text = "HIZ: Açık ("..tostring(speedMultiplier).."x)"
     end
 end)
 
-
-UserInputService.InputChanged:Connect(function(input)
-    if draggingSlider and input.UserInputType == Enum.UserInputType.MouseMovement then
-        
-        local rel = math.clamp(input.Position.X - sliderBack.AbsolutePosition.X, 0, sliderBack.AbsoluteSize.X)
-        local percent = 0
-        if sliderBack.AbsoluteSize.X > 0 then
-            percent = rel / sliderBack.AbsoluteSize.X
-        end
-
-        -- set knob by scale
-        sliderKnob.Position = UDim2.new(percent, 0, 0.5, 0)
-        
-        local val = math.clamp(math.floor(percent * 10), 1, 10)
-        speedMultiplier = val
-        sliderValue.Text = val.."x"
-    end
-end)
+-- başlangıç değerleri
+speedMultiplier = math.clamp(speedMultiplier or 1, 1, 10)
+speedDisplay.Text = tostring(speedMultiplier) .. "x"
 
 -- HIZ BOOSTER
 task.spawn(function()

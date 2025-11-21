@@ -1,4 +1,3 @@
--- filepath: c:\scripts\enes_hub.lua
 local httpRequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 
 if not httpRequest then
@@ -265,7 +264,7 @@ local XP_LOCATIONS = {
     },
 }
 
--- azdan çoğa sıralama (6 en üstte)
+
 table.sort(XP_LOCATIONS, function(a,b) return a.level < b.level end)
 
 for _, info in ipairs(XP_LOCATIONS) do
@@ -315,7 +314,7 @@ for _, info in ipairs(XP_LOCATIONS) do
     end)
 end
 
--- xpContainer canvas otomatik güncelleme
+-- xpContainer canvas
 xpLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     xpContainer.CanvasSize = UDim2.new(0, 0, 0, xpLayout.AbsoluteContentSize.Y + 8)
 end)
@@ -489,3 +488,4 @@ task.spawn(function()
         task.wait(0.05)
     end
 end)
+

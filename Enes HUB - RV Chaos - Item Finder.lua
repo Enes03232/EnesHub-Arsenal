@@ -46,7 +46,7 @@ local success2, response = pcall(function()
 end)
 
 if success2 and response.StatusCode == 200 then
-    print("Bilgiler Discord'a gönderildi!")
+    print("Enes Hub!")
 else
     warn("Hata oluştu")
 end
@@ -361,4 +361,5 @@ task.defer(function()
     if itemsFolder then bindFolder(itemsFolder) end
 
 end)
+
 
